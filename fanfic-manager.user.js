@@ -185,7 +185,7 @@ var Application = function Application(optionsin) {
     story.setEntryStyle(status);
     story.hide(app.options);
   };
-  
+
   a.fic.clear = function (id) {
     a.save("fic", id, "clear");
     var story = _.find(a.collection, function (story) {
@@ -244,17 +244,17 @@ var appDefault = (domElement) => ({
       <div style="display: inline-block; padding: 5px 5px 5px 5px; background: white;">
       Story:
       <a href="" class="story_comments">&#x1F4AC;</a>
-      <a href="" class="plan_story"><font color="${ficStatus.planned.color}">Planned</font></a> | 
-      <a href="" class="ignore_story"><font color="${ficStatus.ignored.color}">Ignored</font></a> | 
-      <a href="" class="read_story"><font color="${ficStatus.read.color}">Read</font></a> | 
-      <a href="" class="love_story" ><font color="${ficStatus.loved.color}">Loved</font></a> | 
-      <a href="" class="like_story"><font color="${ficStatus.liked.color}">Liked</font></a> | 
-      <a href="" class="dislike_story"><font color="${ficStatus.disliked.color}">Disliked</font></a> | 
-      <a href="" class="drop_story"><font color="${ficStatus.dropped.color}">Dropped</font></a> | 
+      <a href="" class="plan_story"><font color="${ficStatus.planned.color}">Planned</font></a> |
+      <a href="" class="ignore_story"><font color="${ficStatus.ignored.color}">Ignored</font></a> |
+      <a href="" class="read_story"><font color="${ficStatus.read.color}">Read</font></a> |
+      <a href="" class="love_story" ><font color="${ficStatus.loved.color}">Loved</font></a> |
+      <a href="" class="like_story"><font color="${ficStatus.liked.color}">Liked</font></a> |
+      <a href="" class="dislike_story"><font color="${ficStatus.disliked.color}">Disliked</font></a> |
+      <a href="" class="drop_story"><font color="${ficStatus.dropped.color}">Dropped</font></a> |
       <a href="" class="clear_story"> Clear</a>
       &nbsp;&nbsp;&nbsp;
-      Author: <a href="" class="like_author">Like</a> | 
-      <a href="" class="dislike_author">Dislike</a> | 
+      Author: <a href="" class="like_author">Like</a> |
+      <a href="" class="dislike_author">Dislike</a> |
       <a href="" class="clear_author">Clear</a>
 
       </div></div>`;
@@ -262,11 +262,11 @@ var appDefault = (domElement) => ({
   },
   addActions: function () {
     domElement.append(this.template());
-    
+
     var actions = domElement.find('.new_like_actions');
     var ficId = this.ficId();
     var authorId = this.authorId();
-    
+
     actions.find('.like_author').click(function () { app.author.like(authorId); return false; });
     actions.find('.dislike_author').click(function () { app.author.dislike(authorId); return false; });
     actions.find('.clear_author').click(function () { app.author.clear(authorId); return false; });
@@ -399,10 +399,10 @@ var Story = function (optionsin) {
 
   if (!options.instance) { throw new Error("instance of this is required"); }
   if (!options.namespace) { throw new Error("namespace is required"); }
-  
+
   var domElement = ffn$(options.instance);
   // Specific sites overrides
-  
+
   var storyEntry = ffn$.extend({}, appDefault(domElement), appNamespace[options.namespace](domElement));
   storyEntry.fic = app.fic.get(storyEntry.ficId());
   storyEntry.setEntryStyle(getFicStatus(storyEntry.fic?.value));
@@ -410,7 +410,7 @@ var Story = function (optionsin) {
   storyEntry.author = app.author.get(storyEntry.authorId());
   storyEntry.setAuthorStyle();
 
-  if (storyEntry.ficId() !== 0 && storyEntry.authorId() !== 0) {
+  if (storyEntry.ficId() !== 0) {
     storyEntry.addActions();
   }
 
@@ -504,8 +504,13 @@ function addActionLinksAO3() {
     var story = new Story({ namespace: app.namespace, instance: this });
     app.collection.push(story);
   });
-  // hide/show options
-  ffn$('div.navigation.actions.module, div.primary.header.module').after(pluginActions);
+    if (window.location.pathname.includes('/tags/')){
+        ffn$('ol.work.index.group').before(pluginActions);
+    } else if (window.location.pathname.includes('/works/')){
+        ffn$('ol.work.index.group').before(pluginActions);
+    } else if (window.location.pathname.includes('/users/')){
+        ffn$('ul.index.group').before(pluginActions);
+    }
 }
 
 // FILE IMPORT/EXPORT
@@ -573,7 +578,7 @@ function dislike_all() {
   });
 }
 
-//START 
+//START
 var app = new Application({ namespace: document.location.host, db: db });
 
 // Adding action links and navigation shortcuts to pages
